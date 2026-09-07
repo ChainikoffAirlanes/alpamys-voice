@@ -1,0 +1,135 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap");
+@import "tailwindcss";
+
+:root {
+  --green-950: #082f23;
+  --green-900: #0c513d;
+  --green-800: #246b53;
+  --green-100: #e5eee9;
+  --paper: #f3f0e9;
+  --gold: #dca72f;
+  --gold-soft: #f6ead0;
+  --mint: #e2ece6;
+  --aqua: #dceae5;
+  --sky: #e9eeec;
+  --rose: #f2e8df;
+  --violet: #ece8df;
+  --ink: #1e2d27;
+  --muted: #68736e;
+  --line: #ddd9cf;
+}
+
+* { box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 1rem;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  color: var(--ink);
+  background: var(--paper);
+  font-family: "Montserrat", Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  width: 100%;
+  overflow-x: clip;
+}
+
+main { min-height: 100svh; }
+button, input, textarea, select { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+::selection { color: white; background: var(--green-800); }
+
+.focus-ring:focus-visible {
+  outline: 3px solid rgba(248, 175, 42, 0.68);
+  outline-offset: 3px;
+}
+
+.brand-hero {
+  background-color: var(--green-950);
+  background-image:
+    radial-gradient(circle at 82% 28%, rgba(248, 175, 42, 0.13), transparent 28%),
+    radial-gradient(circle at 74% 76%, rgba(33, 119, 67, 0.2), transparent 34%),
+    linear-gradient(105deg, #00351c 0%, #004424 52%, #002b17 100%);
+  background-position: center;
+  background-size: cover;
+}
+
+.modern-hero {
+  background-image:
+    radial-gradient(circle at 86% 15%, rgba(220, 167, 47, 0.2), transparent 24%),
+    radial-gradient(circle at 72% 78%, rgba(76, 135, 108, 0.2), transparent 31%),
+    linear-gradient(124deg, #06291f 0%, #0b4937 55%, #092f25 100%);
+}
+
+.modern-hero::after {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  content: "";
+  opacity: 0.13;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.72) 0.7px, transparent 0.7px);
+  background-size: 9px 9px;
+  mask-image: linear-gradient(to bottom, black, transparent 80%);
+}
+
+.hero-orbit {
+  position: absolute;
+  z-index: -1;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+
+.hero-orbit-one { top: 7rem; right: -15rem; width: 42rem; height: 42rem; }
+.hero-orbit-two { bottom: -18rem; left: -13rem; width: 34rem; height: 34rem; }
+
+.brand-grid {
+  background-image:
+    radial-gradient(circle at 8% 18%, rgba(220, 167, 47, 0.14) 0 1.5px, transparent 2px),
+    linear-gradient(135deg, rgba(12, 81, 61, 0.045), transparent 46%);
+  background-size: 22px 22px, 100% 100%;
+}
+
+.soft-shadow { box-shadow: 0 28px 80px rgba(8, 47, 35, 0.12); }
+
+@keyframes float-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-float-in { animation: float-in 450ms ease-out both; }
+
+@keyframes soft-rise {
+  from { opacity: 0; transform: translateY(18px) scale(0.985); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.modern-hero > div:last-child { animation: soft-rise 620ms cubic-bezier(.2,.8,.2,1) both; }
+
+.hero-safe-top { padding-top: max(1rem, env(safe-area-inset-top)); }
+.qr-safe-shell {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+  padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .brand-hero { background-position: 58% center; }
+  .hero-orbit-one { right: -25rem; }
+
+  input,
+  textarea,
+  select { font-size: 16px; }
+}
+
+@supports (padding: max(0px)) {
+  footer { padding-bottom: max(2.5rem, env(safe-area-inset-bottom)); }
+}
