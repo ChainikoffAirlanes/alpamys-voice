@@ -1,4 +1,6 @@
 import type { Submission } from "./validation";
+import { getTelegramConfig, sendTelegramMessage } from "./telegram-api";
+import { getApprovedRecipientIds } from "./telegram-recipients";
 
 export function escapeTelegramHtml(value: string) {
   return value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
@@ -30,16 +32,24 @@ export function formatTelegramMessage(submission: Submission, requestId: string,
 }
 
 export async function sendToTelegram(submission: Submission, requestId: string) {
-  const token = process.env.TELEGRAM_BOT_TOKEN?.trim();
-  const chatId = process.env.TELEGRAM_CHAT_ID?.trim();
-  if (!token || !chatId) throw new Error("TELEGRAM_NOT_CONFIGURED");
+  const { ownerChatId } = getTelegramConfig();
+  const message = formatTelegramMessage(submission, requestId);
+  let recipientIds: string[] = [];
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ chat_id: chatId, text: formatTelegramMessage(submission, requestId), parse_mode: "HTML", disable_web_page_preview: true }),
-    signal: AbortSignal.timeout(10_000),
-    cache: "no-store",
+  try {
+    recipientIds = (await getApprovedRecipientIds()).filter((chatId) => chatId !== ownerChatId);
+  } catch (error) {
+    console.error("Telegram recipient list unavailable", { error: error instanceof Error ? error.message : "unknown" });
+  }
+
+  // Владелец остаётся главным получателем: его ошибка должна быть видна форме,
+  // а недоступность одного дополнительного получателя не ломает отправку остальным.
+  await sendTelegramMessage(ownerChatId, message);
+
+  const results = await Promise.allSettled(recipientIds.map((chatId) => sendTelegramMessage(chatId, message)));
+  results.forEach((result, index) => {
+    if (result.status === "rejected") {
+      console.error("Telegram recipient delivery failed", { chatId: recipientIds[index], error: String(result.reason) });
+    }
   });
-  if (!response.ok) throw new Error(`TELEGRAM_REQUEST_FAILED_${response.status}`);
 }
